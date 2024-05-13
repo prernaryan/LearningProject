@@ -14,7 +14,6 @@ import {
   popUpType,
 } from '@constants/index';
 import {MessageOptions} from 'react-native-flash-message';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {isPlaformIos} from '@utils/helperFunction';
 import {isTablet} from 'react-native-device-info';
 import ToastIcon from '@assets/svg/toastIcon';
@@ -63,13 +62,12 @@ const ToastBanner = (props: propsType): React.JSX.Element => {
       backgroundColor: colors.red.fieldError,
     };
   }, [type]);
-  const {top} = useSafeAreaInsets();
   return (
     <View
       style={
         [
           styles.mainContainer,
-          (!isPlaformIos || isTablet()) && {marginTop: top},
+          (!isPlaformIos || isTablet()) && {marginTop: 10},
         ] as never
       }>
       <View

@@ -1,35 +1,50 @@
-import {Platform, View} from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import FlashMessage from 'react-native-flash-message';
-import {GlobalStyleValues} from './constants';
+import {ConstNumber, GlobalStyleValues, RouteName} from './constants';
 import {NetworkProvider} from './contextApi/NetworkContext';
 import ToastBanner from '@components/reuseableComponents/toastBanner';
-import {AppText} from '@components/reuseableComponents/appText';
-import {StatusBar} from 'native-base';
-import SplashScreen from 'react-native-splash-screen';
-
+import {NativeBaseProvider, StatusBar} from 'native-base';
+import MainNavigator from './navigator/mainNavigator';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import UserAppState from '@components/userAppState';
+import {RootStackParamList} from '@_types/navigation.type';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchIntervalInBackground: true,
+      retry: ConstNumber.VALUE_5,
+      staleTime: ConstNumber.VALUE_500,
+    },
+  },
+});
 const App = (): React.JSX.Element => {
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
+  const [initialRoutename, setInitialRouteName] = React.useState<
+    keyof RootStackParamList
+  >(RouteName.LOGIN);
 
   return (
-    <View style={{marginTop: 70}}>
-      <NetworkProvider>
-        <StatusBar
-          translucent
-          backgroundColor={GlobalStyleValues.TransParent}
-          barStyle={GlobalStyleValues.DARK_CONTENT}
-        />
-        <FlashMessage
-          position={GlobalStyleValues.TOP}
-          //@ts-ignore
-          renderCustomContent={options => <ToastBanner options={options} />}
-        />
-
-        <AppText>App</AppText>
-      </NetworkProvider>
-    </View>
+    <GestureHandlerRootView style={{flex: ConstNumber.VALUE_1}}>
+      <QueryClientProvider client={queryClient}>
+        <NativeBaseProvider>
+          <NetworkProvider>
+            <StatusBar
+              translucent
+              backgroundColor={GlobalStyleValues.TransParent}
+              barStyle={GlobalStyleValues.DARK_CONTENT}
+            />
+            <UserAppState setInitialRouteName={setInitialRouteName}>
+              <MainNavigator initialRouteName={initialRoutename} />
+            </UserAppState>
+            <FlashMessage
+              position={GlobalStyleValues.TOP}
+              //@ts-ignore
+              renderCustomContent={options => <ToastBanner options={options} />}
+            />
+          </NetworkProvider>
+        </NativeBaseProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 };
 
