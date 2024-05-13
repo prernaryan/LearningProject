@@ -1,5 +1,5 @@
 import React from 'react';
-import {ImageBackground, StyleSheet} from 'react-native';
+import {ImageBackground, StyleSheet, ImageSourcePropType} from 'react-native';
 import {PercentageConstants, images} from '@constants/index';
 
 const styles = StyleSheet.create({
@@ -9,8 +9,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const AppBgImage = ({children}: React.PropsWithChildren): React.JSX.Element => {
-  const image = images.appBackgroundImage;
+interface AppBgImageProps {
+  children?: React.ReactNode;
+  source?: ImageSourcePropType;
+}
+
+const AppBgImage = ({
+  children,
+  source,
+}: AppBgImageProps): React.ReactElement => {
+  const image = source || images.appBackgroundImage;
   return (
     <ImageBackground source={image} style={styles.imageStyle}>
       {children}
